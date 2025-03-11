@@ -1,0 +1,47 @@
+# Arquivo de ajuda
+HELP.md
+
+# Diretórios gerados pelo Maven
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+### Logs ###
+rental.log*
+*.log
+
+### STS (Spring Tool Suite) ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### NetBeans ###
+/nbproject/private/
+nbbuild/
+dist/
+nbdist/
+.nb-gradle/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### VS Code ###
+.vscode/
+
+### Arquivos temporários do sistema ###
+Thumbs.db
+.DS_Store
+
+# Diretórios específicos de dados que não precisam ser versionados
+data/

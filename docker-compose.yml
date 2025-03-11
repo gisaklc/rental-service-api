@@ -1,0 +1,24 @@
+services:
+  db:
+    image: postgres  # define a imagem do serviço pegou do docker hub
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: rental-service
+    ports:
+      - '5432:5432' # o segundo parametro é o do container nao pode mudar
+    volumes:
+      - ./data:/var/lib/postgresql/data # espelha os arquivos do container p/ pasta local
+
+  # Essa image é para interface gráfica do db
+  pgadmin:
+    image: dpage/pgadmin4 # define a imagem do serviço pegou do docker hub
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+    ports:
+      - '15432:80'
+    depends_on:
+      - db
