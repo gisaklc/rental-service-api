@@ -1,24 +1,70 @@
-services:
-  db:
-    image: postgres  # define a imagem do serviço pegou do docker hub
-    restart: always
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: rental-service
-    ports:
-      - '5432:5432' # o segundo parametro é o do container nao pode mudar
-    volumes:
-      - ./data:/var/lib/postgresql/data # espelha os arquivos do container p/ pasta local
+version: '3.8'
 
-  # Essa image é para interface gráfica do db
+services:
+  # Banco de dados de desenvolvimento
+  db:
+    image: postgres  # define a imagem do serviço pegando do Docker Hub
+    restart: always
+    container_name: dev-db  # Nome do container para desenvolvimento
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-rental_dev}  # Banco de dados de desenvolvimento
+    ports:
+      - '5432:5432'  # Porta exposta para o banco de dados de desenvolvimento
+    volumes:
+      - data:/var/lib/postgresql/data  # Volume nomeado para o banco de dados de desenvolvimento
+    networks:
+      - rental-net
+
+  # Interface gráfica para o banco de dados (pgAdmin) - para o banco de desenvolvimento
   pgadmin:
-    image: dpage/pgadmin4 # define a imagem do serviço pegou do docker hub
+    image: dpage/pgadmin4  # Define a imagem do serviço pegando do Docker Hub
     restart: always
     environment:
-      PGADMIN_DEFAULT_PASSWORD: admin
-      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-admin@admin.com}
     ports:
-      - '15432:80'
+      - '15432:80'  # Porta do pgAdmin
     depends_on:
-      - db
+      - db  # Espera o banco de dados de desenvolvimento iniciar antes
+    networks:
+      - rental-net
+
+  # Banco de dados de produção
+  prod-db:
+    image: postgres
+    container_name: prod-db  # Nome do container para produção
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER_PROD:-postgresprod}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD_PROD:-postgresprod}
+      POSTGRES_DB: ${POSTGRES_DB_PROD:-rental_prod}  # Banco de dados de produção
+    ports:
+      - '5433:5432'  # Porta exposta para o banco de dados de produção
+    volumes:
+      - prod-data:/var/lib/postgresql/data  # Volume nomeado para o banco de dados de produção
+    networks:
+      - rental-net
+
+  # Interface gráfica para o banco de dados (pgAdmin) - para o banco de produção
+  pgadmin-prod:
+    image: dpage/pgadmin4  # Define a imagem do serviço pegando do Docker Hub
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-admin@admin.com}
+    ports:
+      - '15433:80'  # Porta do pgAdmin para produção
+    depends_on:
+      - prod-db  # Espera o banco de dados de produção iniciar antes
+    networks:
+      - rental-net
+
+networks:
+  rental-net:
+    driver: bridge
+
+volumes:
+  data:  # Volume nomeado para o banco de dados de desenvolvimento
+  prod-data:  # Volume nomeado para o banco de dados de produção
