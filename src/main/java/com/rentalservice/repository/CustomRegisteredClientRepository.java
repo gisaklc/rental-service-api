@@ -2,6 +2,7 @@ package com.rentalservice.repository;
 
 import com.rentalservice.service.ClientService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class CustomRegisteredClientRepository implements RegisteredClientRepository {
 
     private final ClientService clientService;
@@ -30,9 +32,12 @@ public class CustomRegisteredClientRepository implements RegisteredClientReposit
     public RegisteredClient findByClientId(String clientId) {
         var client = clientService.obterPorClientID(clientId);
 
-        if(client == null){
+        if (client == null) {
+            log.error("Client not found for clientId: " + clientId);
             return null;
         }
+
+        log.info("Found client: " + client.getClientId());
 
         return RegisteredClient.withId(client.getId().toString())
                 .clientId(client.getClientId())

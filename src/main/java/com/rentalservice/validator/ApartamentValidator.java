@@ -5,10 +5,12 @@ import com.rentalservice.exception.ValidacaoException;
 import com.rentalservice.model.entity.Apartment;
 import com.rentalservice.repository.ApartamentRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class ApartamentValidator extends ValidadorBase<Apartment> {
 
     private final ApartamentRepository apartamentRepository;
@@ -30,7 +32,10 @@ public class ApartamentValidator extends ValidadorBase<Apartment> {
     }
 
 
-    private boolean existApartamentByNumer(Apartment apartamentDto) {
+    public boolean existApartamentByNumer(Apartment apartamentDto) {
+
+        log.info(STR."Numero do Apto a ser consultado: \{apartamentDto.getNumber()}");
+
         return apartamentRepository.existsByNumber(apartamentDto.getNumber());
     }
 }

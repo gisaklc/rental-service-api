@@ -27,28 +27,15 @@ public class SecurityConfig {
             HttpSecurity http,
             JwtCustomAuthenticationFilter jwtCustomAuthenticationFilter,
             LoginSocialSuccessHandler successHandler) throws Exception {
-        return http
-                .csrf(AbstractHttpConfigurer::disable)
-                .cors(cors -> cors.configurationSource(request -> new CorsConfiguration().applyPermitDefaultValues()))
-                //.httpBasic(Customizer.withDefaults())
-                .formLogin(configurer -> {
-                    configurer.loginPage("/login")  // Verifique se a página de login está no lugar certo
-                            .permitAll();
-                })
-                .authorizeHttpRequests(auth -> {
-                    auth.requestMatchers("/login/**").permitAll();
-                    auth.requestMatchers(HttpMethod.POST, "/v1/users/**").permitAll();
-                    auth.requestMatchers(HttpMethod.POST, "/v1/clients/**").permitAll();
-                    auth.anyRequest().authenticated(); // precisa passar o token
-                })
-                .oauth2Login(oauth2 -> {
-                    oauth2
-                            .loginPage("/login")
-                            .successHandler(successHandler);
-                })
-                .oauth2ResourceServer(oauth2RS -> oauth2RS.jwt(Customizer.withDefaults()))
-                .addFilterAfter(jwtCustomAuthenticationFilter, BearerTokenAuthenticationFilter.class)
-                .build();
+        http
+
+                .authorizeHttpRequests(auth -> auth.anyRequest().permitAll()) // Permite todas as requisições
+                .csrf(csrf -> csrf.disable()) // Desabilita CSRF apenas para testes
+                .cors(cors -> cors.configurationSource(request -> new CorsConfiguration().applyPermitDefaultValues())) // Mantém CORS permitido
+                .formLogin(Customizer.withDefaults()) // Habilita login formulário
+                .httpBasic(Customizer.withDefaults()); // Permite autenticação básica
+
+        return http.build();
     }
 
     @Bean
